@@ -1,0 +1,584 @@
+/* =============================================================================
+   Life Dashboard — styles.css
+   Organisation:
+     1.  CSS reset / base
+     2.  Custom properties (:root + [data-theme="dark"])
+     3.  Layout (#dashboard-grid, header, body)
+     4.  Storage warning banner
+     5.  Widget shared styles (.widget-card / section)
+     6.  Greeting widget
+     7.  Timer widget
+     8.  To-Do widget (list items, edit state, sort buttons)
+     9.  Quick Links widget
+     10. Utility classes (.sr-only, .validation-msg, .btn-icon)
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. CSS RESET / BASE
+   ============================================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+input {
+  font: inherit;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+
+/* =============================================================================
+   2. CUSTOM PROPERTIES — LIGHT THEME (:root) + DARK THEME ([data-theme="dark"])
+   ============================================================================= */
+
+:root {
+  /* Light theme defaults */
+  --color-bg:           #f5f5f5;
+  --color-surface:      #ffffff;
+  --color-text:         #1a1a1a;
+  --color-text-muted:   #555555;
+  --color-accent:       #4a6fa5;
+  --color-accent-hover: #3a5f95;
+  --color-border:       #dddddd;
+  --color-danger:       #c0392b;
+  --color-warning-bg:   #fff3cd;
+  --color-warning-text: #856404;
+  --radius:             8px;
+  --shadow:             0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+  --color-bg:           #1a1a2e;
+  --color-surface:      #16213e;
+  --color-text:         #e0e0e0;
+  --color-text-muted:   #a0a0b0;
+  --color-accent:       #7fa8d8;
+  --color-accent-hover: #9fbde8;
+  --color-border:       #2a2a4a;
+  --color-danger:       #e74c3c;
+  --color-warning-bg:   #3a3000;
+  --color-warning-text: #ffd966;
+}
+
+
+/* =============================================================================
+   3. LAYOUT — #dashboard-grid, header, body
+   ============================================================================= */
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+#theme-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.6rem;
+  font-size: 1.1rem;
+  color: var(--color-text);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+#theme-toggle:hover,
+#theme-toggle:focus-visible {
+  background-color: var(--color-border);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+#dashboard-grid {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  #dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  #dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #greeting-widget {
+    grid-column: 1 / -1;
+  }
+}
+
+
+/* =============================================================================
+   4. STORAGE WARNING BANNER
+   ============================================================================= */
+
+#storage-warning {
+  display: block;
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-warning-text);
+  text-align: center;
+}
+
+/* The banner uses the `hidden` HTML attribute; override display only when visible */
+#storage-warning[hidden] {
+  display: none;
+}
+
+
+/* =============================================================================
+   5. WIDGET SHARED STYLES (.widget-card / section)
+   ============================================================================= */
+
+#dashboard-grid > section {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#dashboard-grid > section h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+/* Shared input styles */
+#dashboard-grid input[type="text"],
+#dashboard-grid input[type="url"],
+#dashboard-grid input[type="number"] {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) / 2);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease, outline 0.15s ease;
+}
+
+#dashboard-grid input[type="text"]:focus,
+#dashboard-grid input[type="url"]:focus,
+#dashboard-grid input[type="number"]:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-accent);
+}
+
+/* Shared primary button style */
+#dashboard-grid button:not(.btn-icon):not(#theme-toggle):not([data-sort]) {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: calc(var(--radius) / 2);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+#dashboard-grid button:not(.btn-icon):not(#theme-toggle):not([data-sort]):hover,
+#dashboard-grid button:not(.btn-icon):not(#theme-toggle):not([data-sort]):focus-visible {
+  background-color: var(--color-accent-hover);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+#dashboard-grid button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* =============================================================================
+   6. GREETING WIDGET
+   ============================================================================= */
+
+#greeting-widget {
+  text-align: center;
+  gap: 0.4rem;
+}
+
+#greeting-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+#greeting-time {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+#greeting-date {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+
+/* =============================================================================
+   7. TIMER WIDGET
+   ============================================================================= */
+
+#timer-widget {
+  align-items: center;
+  text-align: center;
+}
+
+#timer-display {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin: 0.25rem 0;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.timer-duration-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.timer-duration-row label {
+  white-space: nowrap;
+}
+
+.timer-duration-row input[type="number"] {
+  width: 4.5rem;
+  text-align: center;
+}
+
+
+/* =============================================================================
+   8. TO-DO WIDGET
+   ============================================================================= */
+
+/* Add row */
+.todo-add-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.todo-add-row label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.todo-add-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Sort button group */
+.todo-sort-row {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.todo-sort-row button[data-sort] {
+  background-color: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: calc(var(--radius) / 2);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.todo-sort-row button[data-sort]:hover,
+.todo-sort-row button[data-sort]:focus-visible {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.todo-sort-row button[data-sort][aria-pressed="true"] {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* Task list */
+#todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* List item */
+#todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: calc(var(--radius) / 2);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  transition: background-color 0.1s ease;
+}
+
+#todo-list li:hover {
+  background-color: var(--color-surface);
+}
+
+/* Checkbox */
+#todo-list input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+/* Task title span */
+#todo-list .todo-title {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+/* Completed task */
+#todo-list li.done .todo-title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Inline edit input */
+#todo-list .todo-edit-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
+  border-radius: calc(var(--radius) / 2);
+  padding: 0.25rem 0.4rem;
+}
+
+#todo-list .todo-edit-input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Edit/delete icon button group */
+.todo-item-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+
+/* =============================================================================
+   9. QUICK LINKS WIDGET
+   ============================================================================= */
+
+/* Add row */
+.links-add-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.links-add-row label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.links-add-row input[type="text"],
+.links-add-row input[type="url"] {
+  flex: 1;
+  min-width: 6rem;
+}
+
+/* Links grid */
+#links-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.5rem;
+}
+
+/* Individual link item wrapper */
+.link-item {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) / 2);
+  overflow: hidden;
+}
+
+/* Clickable link button */
+.link-item .link-btn {
+  flex: 1;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: none;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.15s ease;
+  /* Override the shared primary button rule */
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
+}
+
+.link-item .link-btn:hover,
+.link-item .link-btn:focus-visible {
+  background-color: var(--color-border) !important;
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* Delete icon inside link item */
+.link-item .btn-icon.link-delete {
+  border-left: 1px solid var(--color-border);
+  border-radius: 0;
+  padding: 0.45rem 0.5rem;
+}
+
+
+/* =============================================================================
+   10. UTILITY CLASSES
+   ============================================================================= */
+
+/* Screen-reader only — visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Inline validation / error message */
+.validation-msg,
+#todo-validation,
+#links-validation {
+  font-size: 0.85rem;
+  color: var(--color-danger);
+  min-height: 1.2em; /* reserve space to avoid layout shift */
+}
+
+/* Icon-only button (edit, delete, confirm, cancel) */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) / 2);
+  padding: 0.25rem 0.35rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  /* Override the shared primary button rule */
+  background-color: transparent !important;
+  color: var(--color-text-muted) !important;
+}
+
+.btn-icon:hover,
+.btn-icon:focus-visible {
+  color: var(--color-text) !important;
+  background-color: var(--color-border) !important;
+  border-color: var(--color-border);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Danger variant for delete buttons */
+.btn-icon.btn-danger:hover,
+.btn-icon.btn-danger:focus-visible {
+  color: var(--color-danger) !important;
+  background-color: var(--color-warning-bg) !important;
+  border-color: var(--color-danger);
+}
